@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Remote Gun Giver</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1c1c1c;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #panel {
+      background: #2c2c2c;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      width: 250px;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="panel">
+    <h2>Remote Weapon Spawner</h2>
+    <input type="text" id="playerId" placeholder="Player ID (Server ID)" /><br />
+    <input type="text" id="weaponName" placeholder="Weapon Name (e.g., WEAPON_SMG)" /><br />
+    <button onclick="sendWeapon()">Give Weapon</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    async function sendWeapon() {
+      const playerId = document.getElementById("playerId").value;
+      const weaponName = document.getElementById("weaponName").value;
+      const status = document.getElementById("status");
+
+      if (!playerId || !weaponName) {
+        status.textContent = "Please enter both fields.";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:30120/admin/giveweapon", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ playerId, weaponName })
+        });
+
+        const data = await res.text();
+        status.textContent = "Server Response: " + data;
+      } catch (err) {
+        status.textContent = "Error sending request.";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
