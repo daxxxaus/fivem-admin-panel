@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Remote Gun Giver</title>
+  <title>FiveM Remote Admin Panel</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,11 +15,11 @@
     }
     #panel {
       background: #2c2c2c;
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
       text-align: center;
     }
-    input, button {
+    input, select, button {
       padding: 10px;
       margin: 10px;
       width: 250px;
@@ -31,40 +31,45 @@
 </head>
 <body>
   <div id="panel">
-    <h2>Remote Weapon Spawner</h2>
+    <h2>FiveM Remote Admin Panel</h2>
     <input type="text" id="playerId" placeholder="Player ID (Server ID)" /><br />
-    <input type="text" id="weaponName" placeholder="Weapon Name (e.g., WEAPON_SMG)" /><br />
-    <button onclick="sendWeapon()">Give Weapon</button>
+    <select id="action">
+      <option value="warn">Warn</option>
+      <option value="kick">Kick</option>
+      <option value="ban">Ban</option>
+    </select><br />
+    <button onclick="sendAction()">Execute</button>
     <p id="status"></p>
   </div>
 
   <script>
-    async function sendWeapon() {
+    async function sendAction() {
       const playerId = document.getElementById("playerId").value;
-      const weaponName = document.getElementById("weaponName").value;
+      const action = document.getElementById("action").value;
       const status = document.getElementById("status");
 
-      if (!playerId || !weaponName) {
-        status.textContent = "Please enter both fields.";
+      if (!playerId || !action) {
+        status.textContent = "Please enter a Player ID and action.";
         return;
       }
 
       try {
-        const res = await fetch("http://localhost:30120/admin/giveweapon", {
+        const res = await fetch("http://your-server-ip:30120/admin/api", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ playerId, weaponName })
+          body: JSON.stringify({ action, target: playerId })
         });
 
         const data = await res.text();
         status.textContent = "Server Response: " + data;
       } catch (err) {
-        status.textContent = "Error sending request.";
+        status.textContent = "Error sending request. Check console.";
         console.error(err);
       }
     }
   </script>
 </body>
 </html>
+
